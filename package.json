@@ -1,17 +1,17 @@
 {
   "name": "ember-battery",
   "version": "0.0.0",
-  "description": "The default blueprint for ember-cli addons.",
+  "description": "Battery status API packaged as a Service",
   "keywords": [
     "ember-addon"
   ],
   "license": "MIT",
-  "author": "",
+  "author": "Mikael Malho <mfmalho@gmail.com>",
   "directories": {
     "doc": "doc",
     "test": "tests"
   },
-  "repository": "",
+  "repository": "https://github.com/mfmalho/ember-battery",
   "scripts": {
     "build": "ember build",
     "start": "ember server",

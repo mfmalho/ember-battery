@@ -49,17 +49,13 @@ export default Ember.Service.extend({
     this._battery.addEventListener('dischargingtimechange', this.onDischargingTimeChange);
   },
 
-  onDischargingTimeChange() {
-     this.set('dischargingTime', this._battery.dischargingTime);
-  },
-
   willDestroy() {
     this._super(...arguments);
     this.removeListeners();
   },
 
   removeListeners() {
-    let battery = this.get('_battery');
+    let battery = this._battery;
     if (battery) {
       battery.removeEventListener('chargingchange', this.onChargingChange);
       battery.removeEventListener('levelchange', this.onLevelChange);

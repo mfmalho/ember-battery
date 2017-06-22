@@ -1,6 +1,6 @@
 {
   "name": "ember-battery",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Battery status API packaged as a Service",
   "keywords": [
     "ember-addon"

@@ -1,66 +1,72 @@
-import Ember from 'ember';
+import Service from '@ember/service';
 
-export default Ember.Service.extend({
-  isCharging: null,
-  level: null,
-  chargingTime: null,
-  dischargingTime: null,
-  levelPercentage: Ember.computed('level', function() {
-    return this.get('level') * 100;
-  }),
+import { tracked } from '@glimmer/tracking';
 
-  init() {
-    this._super(...arguments);
-    if (navigator && navigator.getBattery) {
-      this.set('isSupported', true);
-      navigator.getBattery().then((battery) => {
-        this._battery = battery;
-        this.set('isCharging', battery.charging);
-        this.set('level', battery.level);
-        this.set('chargingTime', battery.chargingTime);
-        this.set('dischargingTime', battery.dischargingTime);
-        this.addListeners();
-      });
-    } else {
-      this.set('isSupported', false);
-    }
-  },
+export default class BatteryService extends Service {
+  #battery = null;
 
-  addListeners() {
-    this.onChargingChange = () => {
-      this.set('isCharging', this._battery.charging);
-    };
+  isSupported = Boolean(navigator && navigator.getBattery);
 
-    this.onLevelChange = () => {
-      this.set('level', this._battery.level);
-    };
+  @tracked isCharging = null;
+  @tracked level = null;
+  @tracked chargingTime = null;
+  @tracked dischargingTime = null;
 
-    this.onChargingTimeChange = () => {
-      this.set('chargingTime', this._battery.chargingTime);
-    };
+  get levelPercentage() {
+    return this.level * 100;
+  }
 
-    this.onDischargingTimeChange = () => {
-      this.set('dischargingTime', this._battery.dischargingTime);
-    };
-
-    this._battery.addEventListener('chargingchange', this.onChargingChange);
-    this._battery.addEventListener('levelchange', this.onLevelChange);
-    this._battery.addEventListener('chargingtimechange', this.onChargingTimeChange);
-    this._battery.addEventListener('dischargingtimechange', this.onDischargingTimeChange);
-  },
-
-  willDestroy() {
-    this._super(...arguments);
-    this.removeListeners();
-  },
-
-  removeListeners() {
-    let battery = this._battery;
-    if (battery) {
-      battery.removeEventListener('chargingchange', this.onChargingChange);
-      battery.removeEventListener('levelchange', this.onLevelChange);
-      battery.removeEventListener('chargingtimechange', this.onChargingTimeChange);
-      battery.removeEventListener('dischargingtimechange', this.onDischargingTimeChange);
+  constructor() {
+    super(...arguments);
+    if (this.isSupported) {
+      this.initBattery();
     }
   }
-});
+
+  async initBattery() {
+    let battery = await navigator.getBattery();
+    this.#battery = battery;
+    this.isCharging = battery.charging;
+    this.level = battery.level;
+    this.chargingTime = battery.chargingTime;
+    this.dischargingTime = battery.dischargingTime;
+    this.addListeners();
+  }
+
+  addListeners() {
+    this._onChargingChange = () => {
+      this.isCharging = this.#battery.charging;
+    };
+
+    this._onLevelChange = () => {
+      this.level = this.#battery.level;
+    };
+
+    this._onChargingTimeChange = () => {
+      this.chargingTime = this.#battery.chargingTime;
+    };
+
+    this._onDischargingTimeChange = () => {
+      this.dischargingTime = this.#battery.dischargingTime;
+    };
+
+    this.#battery.addEventListener('chargingchange', this._onChargingChange);
+    this.#battery.addEventListener('levelchange', this._onLevelChange);
+    this.#battery.addEventListener('chargingtimechange', this._onChargingTimeChange);
+    this.#battery.addEventListener('dischargingtimechange', this._onDischargingTimeChange);
+  }
+
+  willDestroy() {
+    super.willDestroy(...arguments);
+    this.removeListeners();
+  }
+
+  removeListeners() {
+    if (this.#battery) {
+      this.#battery.removeEventListener('chargingchange', this._onChargingChange);
+      this.#battery.removeEventListener('levelchange', this._onLevelChange);
+      this.#battery.removeEventListener('chargingtimechange', this._onChargingTimeChange);
+      this.#battery.removeEventListener('dischargingtimechange', this._onDischargingTimeChange);
+    }
+  }
+}

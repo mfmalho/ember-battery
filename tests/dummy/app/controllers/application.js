@@ -1,14 +1,15 @@
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+import Controller from '@ember/controller';
 
-export default Ember.Controller.extend({
-  battery: Ember.inject.service(),
+export default class ApplicationController extends Controller {
+  @service battery;
 
-  isTooLow: Ember.computed('battery.level', 'battery.isCharging', function() {
-    return !this.get('battery.isCharging') && this.get('battery.level') < 0.2;
-  }),
+  get isTooLow() {
+    return !this.battery.isCharging && this.battery.level < 0.2;
+  }
 
-  iconName: Ember.computed('battery.level', function() {
-    let level = this.get('battery.level');
+  get iconName() {
+    let level = this.battery.level;
     if (level < 0.02) {
       return 'battery-0';
     } else if (level < 0.25) {
@@ -20,5 +21,5 @@ export default Ember.Controller.extend({
     } else {
       return 'battery-4';
     }
-  })
-});
+  }
+}

@@ -1,16 +1,16 @@
-{{#if battery.isSupported}}
-  <p>{{battery.levelPercentage}}%  {{fa-icon iconName}}</p>
+{{#if this.battery.isSupported}}
+  <p>{{this.battery.levelPercentage}}%  {{fa-icon this.iconName}}</p>
 
-  {{#if battery.isCharging}}
+  {{#if this.battery.isCharging}}
     <p>Your battery is charging!</p>
   {{/if}}
 
-  {{#if isTooLow}}
+  {{#if this.isTooLow}}
     <p>Your battery is too low!</p>
   {{/if}}
 
-  <p>Discharging Time: {{battery.dischargingTime}}</p>
-  <p>Charging Time: {{battery.chargingTime}}</p>
+  <p>Discharging Time: {{this.battery.dischargingTime}}</p>
+  <p>Charging Time: {{this.battery.chargingTime}}</p>
 {{else}}
   <p>Your browser does not support battery status API.</p>
 {{/if}}
